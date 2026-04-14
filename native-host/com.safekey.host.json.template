@@ -1,0 +1,10 @@
+{
+  "name": "com.safekey.host",
+  "description": "Safekey password manager native host",
+  "path": "{{BINARY_PATH}}",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://{{CHROME_EXTENSION_ID}}/",
+    "chrome-extension://{{BRAVE_EXTENSION_ID}}/"
+  ]
+}

@@ -43,4 +43,9 @@ secrecy = { version = "0.8", features = ["serde"] }
 uuid = { version = "1", features = ["v4"] }
 thiserror = "1"
 anyhow = "1"
+dirs = "5"
+
+[[bin]]
+name = "safekey-host"
+path = "src/bin/safekey_host.rs"
 

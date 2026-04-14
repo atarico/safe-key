@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Safekey",
+  "version": "0.1.0",
+  "description": "Safekey password manager — auto-fill and save credentials",
+
+  "permissions": [
+    "nativeMessaging",
+    "activeTab",
+    "storage",
+    "clipboardWrite"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Safekey"
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "safekey@safekey.app",
+      "strict_min_version": "109.0"
+    }
+  }
+}

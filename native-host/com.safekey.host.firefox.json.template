@@ -1,0 +1,9 @@
+{
+  "name": "com.safekey.host",
+  "description": "Safekey password manager native host",
+  "path": "{{BINARY_PATH}}",
+  "type": "stdio",
+  "allowed_extensions": [
+    "safekey@safekey.app"
+  ]
+}

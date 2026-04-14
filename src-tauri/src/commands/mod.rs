@@ -3,6 +3,7 @@ use std::sync::Mutex;
 use tauri::State;
 
 use crate::{
+    config,
     error::SafekeyError,
     vault::{Entry, VaultManager, entry::EntryInput},
 };
@@ -29,6 +30,7 @@ pub fn create_vault(
 
     let manager = VaultManager::create_with_salt_file(&path, &master_password)?;
     *state.0.lock().unwrap() = Some(manager);
+    config::set_vault_path(&vault_path);
     Ok(())
 }
 
@@ -42,6 +44,7 @@ pub fn unlock_vault(
     let path = PathBuf::from(&vault_path);
     let manager = VaultManager::unlock(&path, &master_password)?;
     *state.0.lock().unwrap() = Some(manager);
+    config::set_vault_path(&vault_path);
     Ok(())
 }
 
