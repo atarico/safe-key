@@ -29,6 +29,9 @@ export const lockVault = () => invoke<void>("lock_vault");
 
 export const isVaultUnlocked = () => invoke<boolean>("is_vault_unlocked");
 
+export const getLastVaultPath = () =>
+  invoke<string | null>("get_last_vault_path");
+
 // ─── Entries ────────────────────────────────────────────────────────────────
 
 export const listEntries = () => invoke<Entry[]>("list_entries");

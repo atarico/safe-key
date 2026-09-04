@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import * as api from "../lib/tauri";
 import type { Entry, EntryInput } from "../lib/tauri";
 
@@ -9,6 +9,22 @@ export function useVault() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [lastVaultPath, setLastVaultPath] = useState<string | null>(null);
+
+  // Load the last used vault path once so the unlock screen can prefill it.
+  // Failure here is non-fatal: the user can still type the path manually.
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .getLastVaultPath()
+      .then(path => {
+        if (!cancelled) setLastVaultPath(path);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const clearError = () => setError(null);
 
@@ -104,6 +120,7 @@ export function useVault() {
     entries,
     error,
     loading,
+    lastVaultPath,
     clearError,
     createVault,
     unlock,

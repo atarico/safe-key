@@ -18,6 +18,7 @@ pub fn run() {
             commands::unlock_vault,
             commands::lock_vault,
             commands::is_vault_unlocked,
+            commands::get_last_vault_path,
             commands::list_entries,
             commands::create_entry,
             commands::update_entry,

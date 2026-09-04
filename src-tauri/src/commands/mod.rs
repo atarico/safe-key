@@ -60,6 +60,13 @@ pub fn is_vault_unlocked(state: State<'_, VaultState>) -> bool {
     state.0.lock().unwrap().is_some()
 }
 
+/// Returns the last vault path persisted in config.json, if any.
+/// Used to prefill the unlock screen so the user doesn't retype it every time.
+#[tauri::command]
+pub fn get_last_vault_path() -> Option<String> {
+    config::last_vault_path()
+}
+
 // ─── Entries ──────────────────────────────────────────────────────────────────
 
 /// Returns all entries (without passwords).

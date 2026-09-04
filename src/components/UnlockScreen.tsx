@@ -1,15 +1,23 @@
 import { useState } from "react";
 
 interface Props {
+  /** Prefilled vault path (last one used). Parent remounts via `key` when it changes. */
+  initialVaultPath?: string;
   onUnlock: (vaultPath: string, password: string) => void;
   onCreate: (vaultPath: string, password: string) => void;
   loading: boolean;
   error: string | null;
 }
 
-export function UnlockScreen({ onUnlock, onCreate, loading, error }: Props) {
+export function UnlockScreen({
+  initialVaultPath = "",
+  onUnlock,
+  onCreate,
+  loading,
+  error,
+}: Props) {
   const [mode, setMode] = useState<"unlock" | "create">("unlock");
-  const [vaultPath, setVaultPath] = useState("");
+  const [vaultPath, setVaultPath] = useState(initialVaultPath);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);

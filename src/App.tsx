@@ -33,6 +33,8 @@ export default function App() {
   if (vault.status !== "unlocked") {
     return (
       <UnlockScreen
+        key={vault.lastVaultPath ?? ""}
+        initialVaultPath={vault.lastVaultPath ?? ""}
         onUnlock={vault.unlock}
         onCreate={vault.createVault}
         loading={vault.loading}
