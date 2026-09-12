@@ -1,7 +1,7 @@
 [package]
 name = "safekey"
 version = "0.1.0"
-description = "Safekey — open source password manager"
+description = "Safekey — source-available password manager"
 authors = []
 edition = "2021"
 

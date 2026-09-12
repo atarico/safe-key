@@ -1,6 +1,6 @@
 # Safekey
 
-Open source, local-first password manager. Your vault is a single encrypted file on your disk. Nothing is sent anywhere, there are no accounts and no telemetry. A desktop app manages the vault and a browser extension auto-fills and captures credentials through a native messaging bridge.
+Source-available, local-first password manager. Your vault is a single encrypted file on your disk. Nothing is sent anywhere, there are no accounts and no telemetry. A desktop app manages the vault and a browser extension auto-fills and captures credentials through a native messaging bridge.
 
 > **Status:** alpha (0.1.0). Developed and tested on Linux (Ubuntu 24.04). The native host installer currently targets Linux paths only.
 
@@ -153,4 +153,7 @@ Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
 
 ## License
 
-A license has not been chosen yet.
+Safekey is source-available under the [Functional Source License, Version 1.1, Apache 2.0 Future License](LICENSE.md) (SPDX: `FSL-1.1-Apache-2.0`).
+
+In short: you may read, audit, modify and use the software for internal use, education, research and any other non-competing purpose. You may not offer it to others as a commercial product or service that competes with Safekey. Each version becomes available under the Apache License 2.0 two years after it is released. See `LICENSE.md` for the full terms.
+
