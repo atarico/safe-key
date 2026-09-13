@@ -40,9 +40,16 @@ export function EntryList({ entries, onEdit, onDelete, onCopyPassword }: Props) 
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Buscar por sitio o usuario..."
+          aria-label="Buscar entradas"
         />
         {search && (
-          <button className="btn-icon" onClick={() => setSearch("")}>✕</button>
+          <button
+            className="btn-icon"
+            onClick={() => setSearch("")}
+            aria-label="Limpiar búsqueda"
+          >
+            ✕
+          </button>
         )}
       </div>
 

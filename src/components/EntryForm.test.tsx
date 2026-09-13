@@ -7,9 +7,12 @@ import type { Entry } from "../lib/tauri";
 // EntryForm receives `onSave`/`onCancel` as props, so plain `vi.fn()` doubles
 // are the seam here. It never touches `src/lib/tauri.ts`, so no module mock.
 
-const SITE_PLACEHOLDER = "github.com";
-const USERNAME_PLACEHOLDER = "tu@email.com";
-const NOTES_PLACEHOLDER = "Notas adicionales...";
+// Querying by label proves the accessibility contract and the behaviour at
+// once: if a label stops naming its input, these tests go red.
+const siteField = () => screen.getByLabelText("Sitio web");
+const usernameField = () => screen.getByLabelText("Usuario");
+const passwordField = () => screen.getByLabelText(/^Contraseña/);
+const notesField = () => screen.getByLabelText("Notas (opcional)");
 
 // The stored password is present on the fixture on purpose: without it, an
 // assertion that the password field starts empty would pass even if the form
@@ -56,22 +59,22 @@ describe("EntryForm", () => {
   it("prefills the known fields when editing but never the password", () => {
     renderEditing();
 
-    expect(screen.getByPlaceholderText(SITE_PLACEHOLDER)).toHaveValue("github.com");
-    expect(screen.getByPlaceholderText(USERNAME_PLACEHOLDER)).toHaveValue("ada");
-    expect(screen.getByPlaceholderText(NOTES_PLACEHOLDER)).toHaveValue("work account");
+    expect(siteField()).toHaveValue("github.com");
+    expect(usernameField()).toHaveValue("ada");
+    expect(notesField()).toHaveValue("work account");
     // The stored password must not reach the field even when the caller hands
     // it over: the user retypes it to change it, or leaves it alone.
-    expect(screen.getByPlaceholderText("Nueva contraseña...")).toHaveValue("");
+    expect(passwordField()).toHaveValue("");
     expect(document.body.innerHTML).not.toContain(STORED_PASSWORD);
   });
 
   it("saves a new entry with trimmed values", async () => {
     const { onSave, user } = renderNew();
 
-    await user.type(screen.getByPlaceholderText(SITE_PLACEHOLDER), "  github.com  ");
-    await user.type(screen.getByPlaceholderText(USERNAME_PLACEHOLDER), "  ada  ");
-    await user.type(screen.getByPlaceholderText("Contraseña"), "s3cret");
-    await user.type(screen.getByPlaceholderText(NOTES_PLACEHOLDER), "  work account  ");
+    await user.type(siteField(), "  github.com  ");
+    await user.type(usernameField(), "  ada  ");
+    await user.type(passwordField(), "s3cret");
+    await user.type(notesField(), "  work account  ");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(onSave).toHaveBeenCalledWith({
@@ -85,10 +88,10 @@ describe("EntryForm", () => {
   it("omits notes entirely when the field is left blank", async () => {
     const { onSave, user } = renderNew();
 
-    await user.type(screen.getByPlaceholderText(SITE_PLACEHOLDER), "github.com");
-    await user.type(screen.getByPlaceholderText(USERNAME_PLACEHOLDER), "ada");
-    await user.type(screen.getByPlaceholderText("Contraseña"), "s3cret");
-    await user.type(screen.getByPlaceholderText(NOTES_PLACEHOLDER), "   ");
+    await user.type(siteField(), "github.com");
+    await user.type(usernameField(), "ada");
+    await user.type(passwordField(), "s3cret");
+    await user.type(notesField(), "   ");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(onSave).toHaveBeenCalledWith(
@@ -99,8 +102,8 @@ describe("EntryForm", () => {
   it("refuses to save without a site and says so", async () => {
     const { onSave, user } = renderNew();
 
-    await user.type(screen.getByPlaceholderText(USERNAME_PLACEHOLDER), "ada");
-    await user.type(screen.getByPlaceholderText("Contraseña"), "s3cret");
+    await user.type(usernameField(), "ada");
+    await user.type(passwordField(), "s3cret");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(screen.getByText("El sitio no puede estar vacío")).toBeInTheDocument();
@@ -110,8 +113,8 @@ describe("EntryForm", () => {
   it("refuses to save without a username and says so", async () => {
     const { onSave, user } = renderNew();
 
-    await user.type(screen.getByPlaceholderText(SITE_PLACEHOLDER), "github.com");
-    await user.type(screen.getByPlaceholderText("Contraseña"), "s3cret");
+    await user.type(siteField(), "github.com");
+    await user.type(passwordField(), "s3cret");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(screen.getByText("El usuario no puede estar vacío")).toBeInTheDocument();
@@ -121,8 +124,8 @@ describe("EntryForm", () => {
   it("refuses to create an entry with no password and says so", async () => {
     const { onSave, user } = renderNew();
 
-    await user.type(screen.getByPlaceholderText(SITE_PLACEHOLDER), "github.com");
-    await user.type(screen.getByPlaceholderText(USERNAME_PLACEHOLDER), "ada");
+    await user.type(siteField(), "github.com");
+    await user.type(usernameField(), "ada");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(
@@ -134,9 +137,9 @@ describe("EntryForm", () => {
   it("treats whitespace as empty rather than as a site name", async () => {
     const { onSave, user } = renderNew();
 
-    await user.type(screen.getByPlaceholderText(SITE_PLACEHOLDER), "   ");
-    await user.type(screen.getByPlaceholderText(USERNAME_PLACEHOLDER), "ada");
-    await user.type(screen.getByPlaceholderText("Contraseña"), "s3cret");
+    await user.type(siteField(), "   ");
+    await user.type(usernameField(), "ada");
+    await user.type(passwordField(), "s3cret");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(screen.getByText("El sitio no puede estar vacío")).toBeInTheDocument();
@@ -159,7 +162,7 @@ describe("EntryForm", () => {
   it("sends the typed password when editing and the user supplies one", async () => {
     const { onSave, user } = renderEditing();
 
-    await user.type(screen.getByPlaceholderText("Nueva contraseña..."), "rotated");
+    await user.type(passwordField(), "rotated");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     expect(onSave).toHaveBeenCalledWith(
@@ -170,7 +173,7 @@ describe("EntryForm", () => {
   it("keeps the password masked until the user asks to see it", async () => {
     const { user } = renderNew();
 
-    const field = screen.getByPlaceholderText("Contraseña");
+    const field = passwordField();
     expect(field).toHaveAttribute("type", "password");
 
     await user.click(screen.getByTitle("Mostrar"));
@@ -183,7 +186,7 @@ describe("EntryForm", () => {
   it("fills and reveals a generated password", async () => {
     const { user } = renderNew();
 
-    const field = screen.getByPlaceholderText("Contraseña");
+    const field = passwordField();
     await user.click(screen.getByTitle("Generar contraseña segura"));
 
     expect((field as HTMLInputElement).value).toHaveLength(20);
@@ -206,6 +209,14 @@ describe("EntryForm", () => {
     expect(onCancel).toHaveBeenCalledTimes(2);
   });
 
+  it("closes from the dialog's own close control", async () => {
+    const { onCancel, user } = renderNew();
+
+    await user.click(screen.getByRole("button", { name: "Cerrar" }));
+
+    expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
   it("blocks a second submit while the first one is in flight", async () => {
     let finishSave: (ok: boolean) => void = () => {};
     const onSave = vi.fn(
@@ -213,9 +224,9 @@ describe("EntryForm", () => {
     );
     const { user } = renderNew(onSave);
 
-    await user.type(screen.getByPlaceholderText(SITE_PLACEHOLDER), "github.com");
-    await user.type(screen.getByPlaceholderText(USERNAME_PLACEHOLDER), "ada");
-    await user.type(screen.getByPlaceholderText("Contraseña"), "s3cret");
+    await user.type(siteField(), "github.com");
+    await user.type(usernameField(), "ada");
+    await user.type(passwordField(), "s3cret");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     const submit = screen.getByRole("button", { name: "Guardando..." });
@@ -233,9 +244,9 @@ describe("EntryForm", () => {
     const onSave = vi.fn().mockResolvedValue(false);
     const { user } = renderNew(onSave);
 
-    await user.type(screen.getByPlaceholderText(SITE_PLACEHOLDER), "github.com");
-    await user.type(screen.getByPlaceholderText(USERNAME_PLACEHOLDER), "ada");
-    await user.type(screen.getByPlaceholderText("Contraseña"), "s3cret");
+    await user.type(siteField(), "github.com");
+    await user.type(usernameField(), "ada");
+    await user.type(passwordField(), "s3cret");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     const submit = await screen.findByRole("button", { name: "Guardar" });

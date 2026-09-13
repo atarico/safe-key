@@ -20,7 +20,7 @@ describe("UnlockScreen", () => {
     );
 
     expect(
-      screen.getByPlaceholderText("/home/user/Dropbox/safekey.db")
+      screen.getByLabelText("Ruta del vault")
     ).toHaveValue("/home/user/vault.db");
   });
 
@@ -33,11 +33,11 @@ describe("UnlockScreen", () => {
     );
 
     await user.type(
-      screen.getByPlaceholderText("/home/user/Dropbox/safekey.db"),
+      screen.getByLabelText("Ruta del vault"),
       "/home/user/vault.db"
     );
     await user.type(
-      screen.getByPlaceholderText("Tu contraseña maestra"),
+      screen.getByLabelText("Master password"),
       "correct horse battery staple"
     );
     await user.click(screen.getByRole("button", { name: "Desbloquear" }));

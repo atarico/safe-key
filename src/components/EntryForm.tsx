@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { Entry, EntryInput } from "../lib/tauri";
 
 interface Props {
@@ -8,6 +8,7 @@ interface Props {
 }
 
 export function EntryForm({ entry, onSave, onCancel }: Props) {
+  const fieldId = useId();
   const [siteUrl, setSiteUrl] = useState(entry?.site_url ?? "");
   const [username, setUsername] = useState(entry?.username ?? "");
   const [password, setPassword] = useState("");
@@ -64,13 +65,20 @@ export function EntryForm({ entry, onSave, onCancel }: Props) {
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{isEditing ? "Editar entrada" : "Nueva entrada"}</h2>
-          <button className="btn-icon" onClick={onCancel}>✕</button>
+          <button
+            className="btn-icon"
+            onClick={onCancel}
+            aria-label="Cerrar"
+          >
+            ✕
+          </button>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label>Sitio web</label>
+            <label htmlFor={`${fieldId}-site`}>Sitio web</label>
             <input
+              id={`${fieldId}-site`}
               type="text"
               value={siteUrl}
               onChange={e => setSiteUrl(e.target.value)}
@@ -81,8 +89,9 @@ export function EntryForm({ entry, onSave, onCancel }: Props) {
           </div>
 
           <div className="field">
-            <label>Usuario</label>
+            <label htmlFor={`${fieldId}-username`}>Usuario</label>
             <input
+              id={`${fieldId}-username`}
               type="text"
               value={username}
               onChange={e => setUsername(e.target.value)}
@@ -93,7 +102,7 @@ export function EntryForm({ entry, onSave, onCancel }: Props) {
           </div>
 
           <div className="field">
-            <label>
+            <label htmlFor={`${fieldId}-password`}>
               Contraseña
               {isEditing && (
                 <span className="field-hint"> (dejá vacío para no cambiarla)</span>
@@ -101,6 +110,7 @@ export function EntryForm({ entry, onSave, onCancel }: Props) {
             </label>
             <div className="input-with-actions">
               <input
+                id={`${fieldId}-password`}
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -128,8 +138,9 @@ export function EntryForm({ entry, onSave, onCancel }: Props) {
           </div>
 
           <div className="field">
-            <label>Notas (opcional)</label>
+            <label htmlFor={`${fieldId}-notes`}>Notas (opcional)</label>
             <textarea
+              id={`${fieldId}-notes`}
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="Notas adicionales..."

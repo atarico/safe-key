@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 
 interface Props {
   /** Prefilled vault path (last one used). Parent remounts via `key` when it changes. */
@@ -16,6 +16,7 @@ export function UnlockScreen({
   loading,
   error,
 }: Props) {
+  const fieldId = useId();
   const [mode, setMode] = useState<"unlock" | "create">("unlock");
   const [vaultPath, setVaultPath] = useState(initialVaultPath);
   const [password, setPassword] = useState("");
@@ -78,8 +79,9 @@ export function UnlockScreen({
 
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label>Ruta del vault</label>
+            <label htmlFor={`${fieldId}-path`}>Ruta del vault</label>
             <input
+              id={`${fieldId}-path`}
               type="text"
               value={vaultPath}
               onChange={e => setVaultPath(e.target.value)}
@@ -93,8 +95,9 @@ export function UnlockScreen({
           </div>
 
           <div className="field">
-            <label>Master password</label>
+            <label htmlFor={`${fieldId}-password`}>Master password</label>
             <input
+              id={`${fieldId}-password`}
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
@@ -106,8 +109,9 @@ export function UnlockScreen({
 
           {mode === "create" && (
             <div className="field">
-              <label>Confirmar password</label>
+              <label htmlFor={`${fieldId}-confirm`}>Confirmar password</label>
               <input
+                id={`${fieldId}-confirm`}
                 type="password"
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
