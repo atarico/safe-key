@@ -146,16 +146,34 @@ describe("EntryForm", () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 
-  it("sends the keep-existing sentinel when editing without a new password", async () => {
+  it("reports an absent password as null when editing", async () => {
     const { onSave, user } = renderEditing();
 
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
     // An empty password while editing means "leave it alone". The form cannot
-    // read the stored password, so it signals that intent to its caller with
-    // an in-band sentinel value.
+    // read the stored password, so it says so out of band instead.
     expect(onSave).toHaveBeenCalledWith(
-      expect.objectContaining({ password: "__KEEP__" })
+      expect.objectContaining({ password: null })
+    );
+  });
+
+  it("reports an untouched password differently from any value a user could type", async () => {
+    const untouched = vi.fn().mockResolvedValue(true);
+    const first = renderEditing(untouched);
+    await first.user.click(screen.getByRole("button", { name: "Guardar" }));
+    first.unmount();
+
+    const typed = vi.fn().mockResolvedValue(true);
+    const second = renderEditing(typed);
+    await second.user.type(passwordField(), "__KEEP__");
+    await second.user.click(screen.getByRole("button", { name: "Guardar" }));
+
+    // A password manager's data space is every possible string, so no in-band
+    // value can mean "keep the old one" without colliding with a real password
+    // somebody might actually have.
+    expect(untouched.mock.calls[0][0].password).not.toBe(
+      typed.mock.calls[0][0].password
     );
   });
 

@@ -1,9 +1,17 @@
 import { useId, useState } from "react";
 import type { Entry, EntryInput } from "../lib/tauri";
 
+/**
+ * What the form reports. `password: null` means "leave the stored one alone",
+ * said out of band so it cannot collide with a password somebody actually has.
+ */
+export interface EntryFormValues extends Omit<EntryInput, "password"> {
+  password: string | null;
+}
+
 interface Props {
   entry?: Entry;
-  onSave: (input: EntryInput) => Promise<boolean>;
+  onSave: (values: EntryFormValues) => Promise<boolean>;
   onCancel: () => void;
 }
 
@@ -41,7 +49,7 @@ export function EntryForm({ entry, onSave, onCancel }: Props) {
     const ok = await onSave({
       site_url: siteUrl.trim(),
       username: username.trim(),
-      password: password || (isEditing ? "__KEEP__" : ""),
+      password: password || null,
       notes: notes.trim() || undefined,
     });
 

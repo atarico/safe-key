@@ -3,27 +3,27 @@ import { useVault } from "./hooks/useVault";
 import { UnlockScreen } from "./components/UnlockScreen";
 import { EntryList } from "./components/EntryList";
 import { EntryForm } from "./components/EntryForm";
-import { getEntryPassword } from "./lib/tauri";
-import type { Entry, EntryInput } from "./lib/tauri";
+import { toEntryInput } from "./lib/entry-save";
+import type { Entry } from "./lib/tauri";
+import type { EntryFormValues } from "./components/EntryForm";
 import "./App.css";
 
 export default function App() {
   const vault = useVault();
   const [editingEntry, setEditingEntry] = useState<Entry | null | "new">(null);
 
-  const handleSave = async (input: EntryInput) => {
+  const handleSave = async (values: EntryFormValues) => {
     if (editingEntry === "new") {
-      const ok = await vault.addEntry(input);
+      // The form requires a password before it reports a new entry.
+      if (values.password === null) return false;
+      const ok = await vault.addEntry({ ...values, password: values.password });
       if (ok) setEditingEntry(null);
       return ok;
     } else if (editingEntry) {
-      let finalInput = input;
-      // If user left password blank while editing, re-use the existing one
-      if (input.password === "__KEEP__" || input.password === "") {
-        const pwd = await getEntryPassword(editingEntry.id);
-        finalInput = { ...input, password: pwd };
-      }
-      const ok = await vault.editEntry(editingEntry.id, finalInput);
+      const ok = await vault.editEntry(
+        editingEntry.id,
+        await toEntryInput(values, editingEntry.id)
+      );
       if (ok) setEditingEntry(null);
       return ok;
     }
