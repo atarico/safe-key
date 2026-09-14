@@ -18,7 +18,8 @@ export function EntryList({ entries, onEdit, onDelete, onCopyPassword }: Props) 
   );
 
   const handleCopy = async (id: string) => {
-    const ok = await onCopyPassword(id);
+    // A rejection means the copy did not happen, same as a false result.
+    const ok = await onCopyPassword(id).catch(() => false);
     if (ok) {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);

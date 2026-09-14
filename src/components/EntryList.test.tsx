@@ -131,6 +131,21 @@ describe("EntryList", () => {
     );
   });
 
+  it("survives a copy that rejects instead of reporting failure", async () => {
+    // `useVault.copyPassword` swallows its own errors today, but this list
+    // must not depend on that: an unhandled rejection here would escape the
+    // component entirely.
+    const { user } = renderList({
+      onCopyPassword: vi.fn().mockRejectedValue(new Error("vault is locked")),
+    });
+
+    await user.click(screen.getAllByTitle("Copiar contraseña")[0]);
+
+    expect(screen.getAllByTitle("Copiar contraseña")[0]).not.toHaveTextContent(
+      "✅"
+    );
+  });
+
   it("hands the chosen entry to the edit handler", async () => {
     const { onEdit, user } = renderList();
 
