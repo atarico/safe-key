@@ -66,6 +66,12 @@ describe("EntryForm", () => {
     // it over: the user retypes it to change it, or leaves it alone.
     expect(passwordField()).toHaveValue("");
     expect(document.body.innerHTML).not.toContain(STORED_PASSWORD);
+    // Editing says so: the field invites a new password and spells out that
+    // leaving it alone keeps the stored one.
+    expect(passwordField()).toHaveAttribute("placeholder", "Nueva contraseña...");
+    expect(
+      screen.getByText("(dejá vacío para no cambiarla)")
+    ).toBeInTheDocument();
   });
 
   it("saves a new entry with trimmed values", async () => {
