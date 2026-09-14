@@ -3,6 +3,7 @@ pub mod config;
 pub mod crypto;
 pub mod db;
 pub mod error;
+pub mod portable;
 pub mod vault;
 
 use commands::VaultState;
